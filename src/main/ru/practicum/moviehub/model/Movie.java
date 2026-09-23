@@ -2,7 +2,7 @@ package ru.practicum.moviehub.model;
 
 import java.util.Objects;
 
-public class Movie {
+public final class Movie {
     private final int id;
     private final String title;
     private final int year;
