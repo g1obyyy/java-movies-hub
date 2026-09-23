@@ -1,8 +1,13 @@
 package ru.practicum.moviehub.model;
 
+import java.time.Year;
 import java.util.Objects;
 
 public final class Movie {
+    private static final int INITIAL_YEAR = 1888;
+    private static final int FINAL_YEAR = Year.now().getValue() + 1;
+    private static final int MAX_TITLE_LENGTH = 100;
+
     private final int id;
     private final String title;
     private final int year;
@@ -14,8 +19,24 @@ public final class Movie {
     }
 
     public static Movie from(int id, final String title, int year) {
-        Objects.requireNonNull(title);
+        if (!isValidTitle(title)) {
+            throw new IllegalArgumentException("название не должно быть пустым, а длина не должна превышать 100 символов");
+        }
+
+        if (!isValidYear(year)) {
+            int maxYear = Year.now().getValue() + 1;
+            throw new IllegalArgumentException("год должен быть между 1888 и " + maxYear);
+        }
+
         return new Movie(id, title, year);
+    }
+
+    private static boolean isValidYear(int year) {
+        return year >= INITIAL_YEAR && year < FINAL_YEAR;
+    }
+
+    private static boolean isValidTitle(final String title) {
+        return  !title.isEmpty() && title.length() <= MAX_TITLE_LENGTH;
     }
 
     public int getId() {
