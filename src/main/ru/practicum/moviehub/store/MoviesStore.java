@@ -1,6 +1,5 @@
 package ru.practicum.moviehub.store;
 
-import ru.practicum.moviehub.exception.DuplicateMovieException;
 import ru.practicum.moviehub.model.Movie;
 
 import java.util.*;
@@ -12,39 +11,27 @@ public final class MoviesStore {
     private final Map<Integer, Movie> movies = new ConcurrentHashMap<>();
     private final AtomicInteger idGenerator = new AtomicInteger(1);
 
-    private MoviesStore() {}
-
-    public MoviesStore create() {
+    public static MoviesStore create() {
         return new MoviesStore();
     }
 
-    public boolean isEmpty() {
-        return movies.isEmpty();
-    }
-
-    public boolean isDuplicate(final String title, int year) {
-        Objects.requireNonNull(title);
-        return movies.values().stream()
-                .anyMatch(movie -> Objects.equals(title, movie.getTitle()) &&
-                        Objects.equals(year, movie.getYear()));
-    }
-
-    public final Map<Integer, Movie> getMovies() {
+    public final Map<Integer, Movie> getAllMovies() {
         return movies;
     }
 
-    public void addMovie(final String title, int year) {
+    public final Movie addMovie(final String title, int year) {
         Objects.requireNonNull(title);
         if (isDuplicate(title, year)) {
-            throw new DuplicateMovieException("Фильм с таким названием и годом уже существует");
+            throw new IllegalStateException("Фильм с таким названием и годом уже существует");
         }
 
         int id = idGenerator.getAndIncrement();
-        Movie movie = Movie.from(id, title, year);
+        final Movie movie = Movie.from(id, title, year);
         movies.put(id, movie);
+        return movie;
     }
 
-    public Optional<Movie> getById(int id) {
+    public Optional<Movie> getMovieById(int id) {
         return Optional.ofNullable(movies.get(id));
     }
 
@@ -57,4 +44,12 @@ public final class MoviesStore {
                 .filter(movie -> movie.getYear() == year)
                 .collect(Collectors.toList());
     }
+
+    public boolean isDuplicate(final String title, int year) {
+        Objects.requireNonNull(title);
+        return movies.values().stream()
+                .anyMatch(movie -> Objects.equals(title, movie.getTitle()) &&
+                        Objects.equals(year, movie.getYear()));
+    }
+
 }

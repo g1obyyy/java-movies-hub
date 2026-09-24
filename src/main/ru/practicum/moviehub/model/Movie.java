@@ -20,12 +20,12 @@ public final class Movie {
 
     public static Movie from(int id, final String title, int year) {
         if (!isValidTitle(title)) {
-            throw new IllegalArgumentException("название не должно быть пустым, а длина не должна превышать 100 символов");
+            throw new IllegalArgumentException("Название не должно быть пустым, а длина не должна превышать 100 символов");
         }
 
         if (!isValidYear(year)) {
             int maxYear = Year.now().getValue() + 1;
-            throw new IllegalArgumentException("год должен быть между 1888 и " + maxYear);
+            throw new IllegalArgumentException("Год должен быть между 1888 и " + maxYear);
         }
 
         return new Movie(id, title, year);
