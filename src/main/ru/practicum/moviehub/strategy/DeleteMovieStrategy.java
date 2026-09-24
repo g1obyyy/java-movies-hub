@@ -23,7 +23,8 @@ public class DeleteMovieStrategy implements MovieActionStrategy {
     public void execute(HttpExchange exchange, final String path) throws IOException {
         String idString = responder.extractIdString(path, RESOURCE);
         if (idString == null)  {
-            responder.sendError(exchange, 400, "Bad Request", List.of("Эндпоинт не найден"));
+            responder.sendError(exchange, 404, "Not Found",
+                    List.of("DELETE запросы принимаются только на /" + RESOURCE));
             return;
         }
 
