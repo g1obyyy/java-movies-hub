@@ -36,14 +36,14 @@ public final class Movie {
     }
 
     private static boolean isValidTitle(final String title) {
-        return  !title.isEmpty() && title.length() <= MAX_TITLE_LENGTH;
+        return title != null && !title.isBlank() && title.length() <= MAX_TITLE_LENGTH;
     }
 
     public int getId() {
         return id;
     }
 
-    public final String getTitle() {
+    public String getTitle() {
         return title;
     }
 
@@ -58,7 +58,7 @@ public final class Movie {
             return false;
         }
         Movie other = (Movie) o;
-        return Objects.equals(id, other.id) &&
+        return id == other.id &&
                 Objects.equals(title, other.title) &&
                 Objects.equals(year, other.year);
     }

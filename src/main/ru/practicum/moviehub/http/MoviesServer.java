@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpServer;
 import ru.practicum.moviehub.store.MoviesStore;
+import ru.practicum.moviehub.store.MoviesStoreRAM;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -14,7 +15,7 @@ public final class MoviesServer {
     private final HttpServer server;
 
     private MoviesServer() throws IOException {
-        MoviesStore moviesStore = MoviesStore.create();
+        MoviesStore moviesStore = MoviesStoreRAM.create();
         Gson gson = new GsonBuilder()
                 .serializeNulls()
                 .setPrettyPrinting()
