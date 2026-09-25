@@ -57,6 +57,6 @@ public class PostMovieStrategy implements MovieActionStrategy {
 
     private static class MovieRequest {
         String title;
-        int year;
+        Integer year;
     }
 }

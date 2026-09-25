@@ -24,7 +24,7 @@ public class DeleteMovieStrategy implements MovieActionStrategy {
         String idString = responder.extractIdString(path, RESOURCE);
         if (idString == null)  {
             responder.sendError(exchange, 404, "Not Found",
-                    List.of("DELETE запросы принимаются только на /" + RESOURCE));
+                    List.of("DELETE запросы принимаются только на /" + RESOURCE + "/{id}"));
             return;
         }
 

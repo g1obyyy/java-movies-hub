@@ -39,8 +39,7 @@ public class GetMovieStrategy implements MovieActionStrategy {
             processGetById(exchange, idString);
         } else {
             responder.sendError(exchange, 404, "Not Found",
-                    List.of("GET запросы принимаются только на /" + RESOURCE));
-        }
+                    List.of("Некорректный эндпоинт. Используйте /" + RESOURCE + " или /" + RESOURCE + "/{id}"));        }
     }
 
     private void processGetAll(HttpExchange exchange) throws IOException {
@@ -50,12 +49,17 @@ public class GetMovieStrategy implements MovieActionStrategy {
 
     private void processGetByYear(HttpExchange exchange, final String query) throws IOException {
         try {
-            int year = Integer.parseInt(query.split("=")[1]);
+            final String[] parts = query.split("=");
+            if (parts.length != 2) {
+                throw new IllegalArgumentException("Значение года не верно указано");
+            }
+            int year = Integer.parseInt(parts[1]);
+
             List<Movie> filtered = moviesStore.getListByYear(year);
             responder.sendJson(exchange, 200, responder.getGson().toJson(filtered));
-        } catch (NumberFormatException e) {
+        } catch (IllegalArgumentException e) {
             responder.sendError(exchange, 400, "Bad Request",
-                    List.of("Некорректный параметр запроса year - не Число"));
+                    List.of("Некорректный параметр запроса year. Ожидается число"));
         }
     }
 
