@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import ru.practicum.moviehub.store.MoviesStore;
 import ru.practicum.moviehub.strategy.DeleteMovieStrategy;
+import ru.practicum.moviehub.strategy.GetMovieStrategy;
 import ru.practicum.moviehub.strategy.MovieActionStrategy;
 import ru.practicum.moviehub.strategy.PostMovieStrategy;
 
@@ -23,6 +24,7 @@ public final class MoviesHandler implements HttpHandler {
 
         responder = HttpResponder.from(gson);
         strategies = Map.of(
+                "GET", new GetMovieStrategy(moviesStore, responder),
                 "POST", new PostMovieStrategy(moviesStore, responder),
                 "DELETE", new DeleteMovieStrategy(moviesStore, responder)
         );

@@ -2,7 +2,10 @@ package ru.practicum.moviehub.store;
 
 import ru.practicum.moviehub.model.Movie;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -15,8 +18,8 @@ public final class MoviesStore {
         return new MoviesStore();
     }
 
-    public final Map<Integer, Movie> getAllMovies() {
-        return movies;
+    public final List<Movie> getAllMoviesList() {
+        return List.copyOf(movies.values());
     }
 
     public final Movie addMovie(final String title, int year) {
