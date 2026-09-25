@@ -1,6 +1,10 @@
 package ru.practicum.moviehub.model;
 
+import ru.practicum.moviehub.exception.ValidationException;
+
 import java.time.Year;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public final class Movie {
@@ -19,20 +23,25 @@ public final class Movie {
     }
 
     public static Movie from(int id, final String title, int year) {
+        final List<String> errors = new ArrayList<>();
+
         if (!isValidTitle(title)) {
-            throw new IllegalArgumentException("Название не должно быть пустым, а длина не должна превышать 100 символов");
+            errors.add("Название не должно быть пустым, а длина не должна превышать 100 символов");
         }
 
         if (!isValidYear(year)) {
-            int maxYear = Year.now().getValue() + 1;
-            throw new IllegalArgumentException("Год должен быть между 1888 и " + maxYear);
+            errors.add("Год должен быть между 1888 и " + FINAL_YEAR);
+        }
+
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
         }
 
         return new Movie(id, title, year);
     }
 
     private static boolean isValidYear(int year) {
-        return year >= INITIAL_YEAR && year < FINAL_YEAR;
+        return year >= INITIAL_YEAR && year <= FINAL_YEAR;
     }
 
     private static boolean isValidTitle(final String title) {

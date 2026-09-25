@@ -2,6 +2,7 @@ package ru.practicum.moviehub.strategy;
 
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
+import ru.practicum.moviehub.exception.ValidationException;
 import ru.practicum.moviehub.http.HttpResponder;
 import ru.practicum.moviehub.model.Movie;
 import ru.practicum.moviehub.store.MoviesStore;
@@ -48,8 +49,8 @@ public class PostMovieStrategy implements MovieActionStrategy {
             responder.sendJson(exchange, 201, responder.getGson().toJson(movie));
         } catch (JsonSyntaxException e) {
             responder.sendError(exchange, 400, "Bad Request", List.of("Некорректный JSON"));
-        } catch (IllegalArgumentException e) {
-            responder.sendError(exchange, 422, "Validation Error", List.of(e.getMessage()));
+        } catch (ValidationException e) {
+            responder.sendError(exchange, 422, "Validation Error", e.getDetails());
         } catch (IllegalStateException e) {
             responder.sendError(exchange, 409, "Conflict", List.of(e.getMessage()));
         }
