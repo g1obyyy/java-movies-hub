@@ -41,21 +41,22 @@ public final class MoviesHandler implements HttpHandler {
                 strategy.execute(exchange, path);
             } else {
                 responder.sendError(exchange, 405, "Method Not Allowed",
-                        List.of("Метод " + method + "не поддерживается"));
+                        List.of("Метод " + method + " не поддерживается"));
             }
         } catch (Exception e) {
-            responder.sendError(exchange, 500, "Internal Server Error", List.of(e.getMessage()));
+            responder.sendError(exchange, 500, "Internal Server Error",
+                    List.of(e.getMessage()));
         }
 
     }
-    private final String normalizePath(final String path) {
+    private String normalizePath(final String path) {
         if (path.endsWith("/") && path.length() > 1) {
             return path.substring(0, path.length() - 1);
         }
         return path;
     }
 
-    private final String getNormalizePath(HttpExchange exchange) {
+    private String getNormalizePath(HttpExchange exchange) {
         final String path = exchange.getRequestURI().getPath();
         return normalizePath(path);
     }

@@ -27,7 +27,7 @@ public final class HttpResponder {
         return new HttpResponder(gson);
     }
 
-    public final Gson getGson() {
+    public Gson getGson() {
         return gson;
     }
 
@@ -51,7 +51,7 @@ public final class HttpResponder {
         sendJson(exchange, status, jsonError);
     }
 
-    public final String extractIdString(final String path, final String resourceName) {
+    public String extractIdString(final String path, final String resourceName) {
         final String[] tokens = path.split("/");
         if (tokens.length == 3 && tokens[1].equals(resourceName)) {
             return tokens[2];
@@ -59,12 +59,12 @@ public final class HttpResponder {
         return null;
     }
 
-    public boolean isApplicationJson(HttpExchange exchange) throws IOException {
+    public boolean isApplicationJson(HttpExchange exchange) {
         List<String> headers = exchange.getRequestHeaders().get("Content-Type");
-        return headers != null && headers.contains(CT_JSON);
+        return headers != null && headers.contains("application/json");
     }
 
-    public final String readBody(HttpExchange exchange) throws IOException {
+    public String readBody(HttpExchange exchange) throws IOException {
         try (InputStream is = exchange.getRequestBody()) {
             return new String(is.readAllBytes(), DEFAULT_CHARSET);
         }

@@ -8,24 +8,27 @@ import ru.practicum.moviehub.store.MoviesStoreRAM;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Objects;
 
 public final class MoviesServer {
-    public static final int PORT = 8080;
-
     private final HttpServer server;
+    private final int port;
 
-    private MoviesServer() throws IOException {
-        MoviesStore moviesStore = MoviesStoreRAM.create();
+    private MoviesServer(final MoviesStore moviesStore, int port) throws IOException {
+        this.port = port;
+
         Gson gson = new GsonBuilder()
                 .serializeNulls()
                 .setPrettyPrinting()
                 .create();
-        server = HttpServer.create(new InetSocketAddress(PORT), 0);
+
+        server = HttpServer.create(new InetSocketAddress(port), 0);
         server.createContext("/movies", new MoviesHandler(moviesStore, gson));
     }
 
-    public static MoviesServer create() throws IOException {
-        return new MoviesServer();
+    public static MoviesServer create(final MoviesStore moviesStore, int port) throws IOException {
+        Objects.requireNonNull(moviesStore,"Библиотека фильмов не может быть Null");
+        return new MoviesServer(moviesStore, port);
     }
 
     public void start() {
