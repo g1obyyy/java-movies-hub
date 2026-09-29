@@ -1,4 +1,4 @@
-package ru.practicum.moviehub;
+package ru.practicum.moviehub.http;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
@@ -61,7 +61,11 @@ public final class HttpResponder {
 
     public boolean isApplicationJson(HttpExchange exchange) {
         List<String> headers = exchange.getRequestHeaders().get("Content-Type");
-        return headers != null && headers.contains("application/json");
+        if (headers == null) {
+            return false;
+        }
+        return headers.stream()
+                .anyMatch(header -> header.toLowerCase().contains("application/json"));
     }
 
     public String readBody(HttpExchange exchange) throws IOException {

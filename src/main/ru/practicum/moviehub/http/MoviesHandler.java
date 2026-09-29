@@ -1,4 +1,4 @@
-package ru.practicum.moviehub;
+package ru.practicum.moviehub.http;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;

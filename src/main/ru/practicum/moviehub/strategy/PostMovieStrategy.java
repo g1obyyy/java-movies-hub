@@ -3,7 +3,7 @@ package ru.practicum.moviehub.strategy;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import ru.practicum.moviehub.exception.ValidationException;
-import ru.practicum.moviehub.HttpResponder;
+import ru.practicum.moviehub.http.HttpResponder;
 import ru.practicum.moviehub.model.Movie;
 import ru.practicum.moviehub.store.MoviesStore;
 
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class PostMovieStrategy implements MovieActionStrategy {
-    private static final String RESOURCE = "movies";
+    public static final String RESOURCE = "movies";
 
     private final MoviesStore moviesStore;
     private final HttpResponder responder;

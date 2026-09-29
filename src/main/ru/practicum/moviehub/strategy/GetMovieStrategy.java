@@ -1,7 +1,7 @@
 package ru.practicum.moviehub.strategy;
 
 import com.sun.net.httpserver.HttpExchange;
-import ru.practicum.moviehub.HttpResponder;
+import ru.practicum.moviehub.http.HttpResponder;
 import ru.practicum.moviehub.model.Movie;
 import ru.practicum.moviehub.store.MoviesStore;
 

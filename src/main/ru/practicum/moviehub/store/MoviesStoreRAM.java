@@ -53,7 +53,9 @@ public final class MoviesStoreRAM implements MoviesStore {
     }
 
     private boolean isDuplicate(final String title, int year) {
-        Objects.requireNonNull(title);
+        if (title == null) {
+            return false;
+        }
         return movies.values().stream()
                 .anyMatch(movie -> Objects.equals(title, movie.getTitle()) &&
                         year == movie.getYear());

@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import ru.practicum.moviehub.MoviesServer;
+import ru.practicum.moviehub.http.MoviesServer;
 import ru.practicum.moviehub.store.MoviesStore;
 import ru.practicum.moviehub.store.MoviesStoreRAM;
 

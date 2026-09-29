@@ -9,9 +9,9 @@ import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-@DisplayName("Тесты эндпоинта DELETE /movies/{id}")
+@DisplayName("Тестирование API DELETE")
 public class DeleteMovieApiTest extends BaseApiTest {
-    public static final String URI_PART = "http://localhost:8081/movies/";
+    private static final String URI_PART = "http://localhost:8081/movies/";
 
     @Test
     @DisplayName("Успешное удаление фильма по существующему ID")
