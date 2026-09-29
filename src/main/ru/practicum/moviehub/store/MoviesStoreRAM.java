@@ -59,4 +59,7 @@ public final class MoviesStoreRAM implements MoviesStore {
                         year == movie.getYear());
     }
 
+    public int size() {
+        return movies.size();
+    }
 }

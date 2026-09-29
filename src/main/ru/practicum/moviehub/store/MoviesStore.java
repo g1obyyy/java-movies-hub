@@ -11,4 +11,5 @@ public interface MoviesStore {
     Optional<Movie> getMovieById(int id);
     boolean removeMovie(int id);
     List<Movie> getListByYear(int year);
+    int size();
 }
