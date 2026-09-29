@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class GetMovieStrategy implements MovieActionStrategy {
-    private static final String RESOURCE = "movies";
+    public static final String RESOURCE = "movies";
 
     private final MoviesStore moviesStore;
     private final HttpResponder responder;
