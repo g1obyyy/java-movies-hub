@@ -1,4 +1,4 @@
-package ru.practicum.moviehub.http;
+package ru.practicum.moviehub;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

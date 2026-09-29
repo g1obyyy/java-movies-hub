@@ -1,12 +1,10 @@
-package ru.practicum.moviehub.http;
+package ru.practicum.moviehub.strategy;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.practicum.moviehub.api.ErrorResponse;
 import ru.practicum.moviehub.model.Movie;
-import ru.practicum.moviehub.strategy.DeleteMovieStrategy;
-
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;

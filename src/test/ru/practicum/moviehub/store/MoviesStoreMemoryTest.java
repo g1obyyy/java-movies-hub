@@ -1,11 +1,9 @@
-package ru.practicum.moviehub.http;
+package ru.practicum.moviehub.store;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.practicum.moviehub.model.Movie;
-import ru.practicum.moviehub.store.MoviesStore;
-import ru.practicum.moviehub.store.MoviesStoreRAM;
 
 import java.util.List;
 import java.util.Optional;
@@ -93,5 +91,18 @@ public class MoviesStoreMemoryTest {
     @Test
     public void getListByYearEmpty() {
         Assertions.assertTrue(store.getListByYear(2001).isEmpty());
+    }
+
+    @Test
+    public void clearStoreValid() {
+        store.addMovie("Король лев", 2000);
+        store.addMovie("Лев король", 2001);
+
+        store.clear();
+
+        Assertions.assertEquals(0, store.size());
+
+        Movie newMovie = store.addMovie("Король лев", 2000);
+        Assertions.assertEquals(1, newMovie.getId());
     }
 }

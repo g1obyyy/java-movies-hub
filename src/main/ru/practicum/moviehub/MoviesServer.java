@@ -1,10 +1,9 @@
-package ru.practicum.moviehub.http;
+package ru.practicum.moviehub;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpServer;
 import ru.practicum.moviehub.store.MoviesStore;
-import ru.practicum.moviehub.store.MoviesStoreRAM;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

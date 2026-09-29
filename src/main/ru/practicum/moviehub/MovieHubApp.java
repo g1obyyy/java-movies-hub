@@ -1,6 +1,5 @@
 package ru.practicum.moviehub;
 
-import ru.practicum.moviehub.http.MoviesServer;
 import ru.practicum.moviehub.store.MoviesStore;
 import ru.practicum.moviehub.store.MoviesStoreRAM;
 

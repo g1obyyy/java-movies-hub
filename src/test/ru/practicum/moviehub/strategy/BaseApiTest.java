@@ -1,10 +1,11 @@
-package ru.practicum.moviehub.http;
+package ru.practicum.moviehub.strategy;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import ru.practicum.moviehub.MoviesServer;
 import ru.practicum.moviehub.store.MoviesStore;
 import ru.practicum.moviehub.store.MoviesStoreRAM;
 
@@ -14,7 +15,7 @@ import java.net.http.HttpClient;
 public class BaseApiTest {
     public static final int PORT = 8081;
 
-    protected static  MoviesServer server;
+    protected static MoviesServer server;
     protected static MoviesStore store;
     protected static HttpClient client;
     protected static Gson gson;
