@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class DeleteMovieStrategy implements MovieActionStrategy {
-    private static final String RESOURCE = "movies";
+    public static final String RESOURCE = "movies";
 
     private final MoviesStore moviesStore;
     private final HttpResponder responder;

@@ -25,8 +25,8 @@ public class MoviesStoreMemoryTest {
 
     @Test
     public void getAllMoviesListNotEmpty() {
-        Movie movie1 = store.addMovie("Король лев", 2000);
-        Movie movie2 = store.addMovie("Лев король", 2001);
+        store.addMovie("Король лев", 2000);
+        store.addMovie("Лев король", 2001);
 
         Assertions.assertEquals(2, store.getAllMoviesList().size());
     }
@@ -44,7 +44,7 @@ public class MoviesStoreMemoryTest {
 
     @Test
     public void addMovieWithDuplicateData() {
-        Movie movie = store.addMovie("Король лев", 2000);
+        store.addMovie("Король лев", 2000);
 
         Assertions.assertThrows(IllegalStateException.class, () -> store.addMovie("Король лев", 2000));
     }
@@ -80,9 +80,9 @@ public class MoviesStoreMemoryTest {
 
     @Test
     public void getListByYearValid() {
-        Movie movie1 = store.addMovie("Король лев", 2000);
-        Movie movie2 = store.addMovie("Лев Король", 2000);
-        Movie movie3 = store.addMovie("Короли лев", 2001);
+        store.addMovie("Король лев", 2000);
+        store.addMovie("Лев Король", 2000);
+        store.addMovie("Короли лев", 2001);
 
         List<Movie> movies = store.getListByYear(2000);
         Assertions.assertEquals(2, movies.size());

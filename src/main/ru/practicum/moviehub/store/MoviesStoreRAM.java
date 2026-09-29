@@ -59,6 +59,13 @@ public final class MoviesStoreRAM implements MoviesStore {
                         year == movie.getYear());
     }
 
+    @Override
+    public void clear() {
+        movies.clear();
+        idGenerator.set(1);
+    }
+
+    @Override
     public int size() {
         return movies.size();
     }
