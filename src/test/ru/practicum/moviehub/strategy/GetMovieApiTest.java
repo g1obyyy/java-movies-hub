@@ -175,6 +175,4 @@ public class GetMovieApiTest extends BaseApiTest {
                 + GetMovieStrategy.RESOURCE + "/{id}"
                 , error.details().getFirst());
     }
-
-
 }
