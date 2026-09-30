@@ -39,7 +39,8 @@ public class GetMovieStrategy implements MovieActionStrategy {
             processGetById(exchange, idString);
         } else {
             responder.sendError(exchange, 404, "Not Found",
-                    List.of("Некорректный эндпоинт. Используйте /" + RESOURCE + " или /" + RESOURCE + "/{id}"));        }
+                    List.of("Некорректный эндпоинт. Используйте /" + RESOURCE + " или /" + RESOURCE + "/{id}"));
+        }
     }
 
     private void processGetAll(HttpExchange exchange) throws IOException {
