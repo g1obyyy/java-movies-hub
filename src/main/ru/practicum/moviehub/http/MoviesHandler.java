@@ -49,6 +49,7 @@ public final class MoviesHandler implements HttpHandler {
         }
 
     }
+
     private String normalizePath(final String path) {
         if (path.endsWith("/") && path.length() > 1) {
             return path.substring(0, path.length() - 1);
