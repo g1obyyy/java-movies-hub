@@ -73,10 +73,10 @@ public class GetMovieApiTest extends BaseApiTest {
     @DisplayName("GET /movies/{id} возвращает ошибку 404, если фильм не найден")
     public void getMovieByIdNotFound() throws Exception {
         URI uri = URI.create(URI_FULL + "/" + "999");
-        HttpRequest request = HttpRequest.newBuilder().
-                uri(uri).
-                GET().
-                build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         Assertions.assertEquals(404, response.statusCode());
@@ -89,10 +89,10 @@ public class GetMovieApiTest extends BaseApiTest {
     @DisplayName("GET /movies/{id} возвращает ошибку 400, если id не число")
     public void getMovieById_notNumber() throws Exception {
         URI uri = URI.create(URI_FULL + "/" + "asd");
-        HttpRequest request = HttpRequest.newBuilder().
-                uri(uri).
-                GET().
-                build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         Assertions.assertEquals(400, response.statusCode());
@@ -118,8 +118,8 @@ public class GetMovieApiTest extends BaseApiTest {
         List<Movie> movies = gson.fromJson(response.body(), new ListOfMoviesTypeToken());
 
         Assertions.assertEquals(2, movies.size());
-        boolean allMatch = movies.stream().
-                allMatch(m -> m.getYear() == 2000);
+        boolean allMatch = movies.stream()
+                    .allMatch(m -> m.getYear() == 2000);
         Assertions.assertTrue(allMatch);
     }
 
@@ -151,8 +151,8 @@ public class GetMovieApiTest extends BaseApiTest {
         Assertions.assertEquals(400, response.statusCode());
         ErrorResponse error = gson.fromJson(response.body(), ErrorResponse.class);
         Assertions.assertEquals("Bad Request", error.error());
-        Assertions.assertEquals("Некорректный параметр запроса year. Ожидается число"
-                , error.details().getFirst());
+        Assertions.assertEquals("Некорректный параметр запроса year. Ожидается число",
+                error.details().getFirst());
     }
 
     @Test
@@ -172,7 +172,7 @@ public class GetMovieApiTest extends BaseApiTest {
         Assertions.assertEquals(1, error.details().size());
         Assertions.assertEquals("Некорректный эндпоинт. Используйте /"
                 + GetMovieStrategy.RESOURCE + " или /"
-                + GetMovieStrategy.RESOURCE + "/{id}"
-                , error.details().getFirst());
+                + GetMovieStrategy.RESOURCE + "/{id}",
+                error.details().getFirst());
     }
 }

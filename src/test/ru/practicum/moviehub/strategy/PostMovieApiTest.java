@@ -231,8 +231,8 @@ public class PostMovieApiTest extends BaseApiTest {
         ErrorResponse error = gson.fromJson(response.body(), ErrorResponse.class);
         Assertions.assertEquals("Not Found", error.error());
         Assertions.assertEquals(1, error.details().size());
-        Assertions.assertEquals("POST запросы принимаются только на /" + PostMovieStrategy.RESOURCE
-                , error.details().getFirst());
+        Assertions.assertEquals("POST запросы принимаются только на /" + PostMovieStrategy.RESOURCE,
+                error.details().getFirst());
         Assertions.assertEquals(0, store.size());
     }
 }
