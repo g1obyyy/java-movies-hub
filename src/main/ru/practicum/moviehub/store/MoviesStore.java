@@ -7,10 +7,16 @@ import java.util.Optional;
 
 public interface MoviesStore {
     List<Movie> getAllMoviesList();
+
     Movie addMovie(final String title, int year);
+
     Optional<Movie> getMovieById(int id);
+
     boolean removeMovie(int id);
+
     List<Movie> getListByYear(int year);
+
     void clear();
+
     int size();
 }
