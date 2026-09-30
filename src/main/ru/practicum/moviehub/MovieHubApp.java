@@ -18,7 +18,6 @@ public class MovieHubApp {
             server.start();
         } catch (IOException e) {
             System.err.println("Критическая ошибка при запуске сервера: " + e.getMessage());
-            System.exit(1);
         }
     }
 }
