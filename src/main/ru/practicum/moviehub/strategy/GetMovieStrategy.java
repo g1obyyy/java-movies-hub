@@ -1,6 +1,7 @@
 package ru.practicum.moviehub.strategy;
 
 import com.sun.net.httpserver.HttpExchange;
+import ru.practicum.moviehub.http.HttpRequestParser;
 import ru.practicum.moviehub.http.HttpResponder;
 import ru.practicum.moviehub.model.Movie;
 import ru.practicum.moviehub.store.MoviesStore;
@@ -15,10 +16,12 @@ public class GetMovieStrategy implements MovieActionStrategy {
 
     private final MoviesStore moviesStore;
     private final HttpResponder responder;
+    private final HttpRequestParser parser;
 
-    public GetMovieStrategy(final MoviesStore moviesStore, final HttpResponder responder) {
+    public GetMovieStrategy(final MoviesStore moviesStore, final HttpResponder responder, final HttpRequestParser parser) {
         this.moviesStore = Objects.requireNonNull(moviesStore,"Библиотека фильмов не может быть Null");
         this.responder = Objects.requireNonNull(responder, "Класс Responder должен быть инициализирован");
+        this.parser = Objects.requireNonNull(parser, "Класс Parser должен быть инициализирован");
     }
 
     @Override
@@ -34,7 +37,7 @@ public class GetMovieStrategy implements MovieActionStrategy {
             return;
         }
 
-        final String idString = responder.extractIdString(path, RESOURCE);
+        final String idString = parser.extractIdString(path, RESOURCE);
         if (idString != null) {
             processGetById(exchange, idString);
         } else {
@@ -44,8 +47,7 @@ public class GetMovieStrategy implements MovieActionStrategy {
     }
 
     private void processGetAll(HttpExchange exchange) throws IOException {
-        responder.sendJson(exchange, 200,
-                responder.getGson().toJson(moviesStore.getAllMoviesList()));
+        responder.sendJson(exchange, 200, moviesStore.getAllMoviesList());
     }
 
     private void processGetByYear(HttpExchange exchange, final String query) throws IOException {
@@ -57,7 +59,7 @@ public class GetMovieStrategy implements MovieActionStrategy {
             int year = Integer.parseInt(parts[1]);
 
             List<Movie> filtered = moviesStore.getListByYear(year);
-            responder.sendJson(exchange, 200, responder.getGson().toJson(filtered));
+            responder.sendJson(exchange, 200, filtered);
         } catch (IllegalArgumentException e) {
             responder.sendError(exchange, 400, "Bad Request",
                     List.of("Некорректный параметр запроса year. Ожидается число"));
@@ -69,7 +71,7 @@ public class GetMovieStrategy implements MovieActionStrategy {
             int id = Integer.parseInt(idString);
             Optional<Movie> optionalMovie = moviesStore.getMovieById(id);
             if (optionalMovie.isPresent()) {
-                responder.sendJson(exchange, 200, responder.getGson().toJson(optionalMovie.get()));
+                responder.sendJson(exchange, 200, optionalMovie.get());
             } else {
                 responder.sendError(exchange, 404, "Not Found",
                         List.of("Фильм не найден"));

@@ -162,9 +162,9 @@ public class PostMovieApiTest extends BaseApiTest {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        Assertions.assertEquals(400, response.statusCode());
+        Assertions.assertEquals(422, response.statusCode());
         ErrorResponse error = gson.fromJson(response.body(), ErrorResponse.class);
-        Assertions.assertEquals("Bad Request", error.error());
+        Assertions.assertEquals("Validation Error", error.error());
         Assertions.assertEquals(1, error.details().size());
         Assertions.assertEquals("Некорректный JSON", error.details().getFirst());
         Assertions.assertEquals(0, store.size());
@@ -187,12 +187,8 @@ public class PostMovieApiTest extends BaseApiTest {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        Assertions.assertEquals(409, response.statusCode());
-        ErrorResponse error = gson.fromJson(response.body(), ErrorResponse.class);
-        Assertions.assertEquals("Conflict", error.error());
-        Assertions.assertEquals(1, error.details().size());
-        Assertions.assertEquals("Фильм с таким названием и годом уже существует", error.details().getFirst());
-        Assertions.assertEquals(1, store.size());
+        Assertions.assertEquals(201, response.statusCode());
+        Assertions.assertEquals(2, store.size());
     }
 
     @Test
@@ -207,9 +203,9 @@ public class PostMovieApiTest extends BaseApiTest {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        Assertions.assertEquals(400, response.statusCode());
+        Assertions.assertEquals(422, response.statusCode());
         ErrorResponse error = gson.fromJson(response.body(), ErrorResponse.class);
-        Assertions.assertEquals("Bad Request", error.error());
+        Assertions.assertEquals("Validation Error", error.error());
         Assertions.assertEquals(1, error.details().size());
         Assertions.assertEquals("Тело запроса пустое", error.details().getFirst());
         Assertions.assertEquals(0, store.size());

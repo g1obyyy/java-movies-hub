@@ -45,7 +45,7 @@ public final class MoviesHandler implements HttpHandler {
             }
         } catch (Exception e) {
             responder.sendError(exchange, 500, "Internal Server Error",
-                    List.of(e.getMessage()));
+                    List.of("Произошла непредвиденная ошибка на сервере"));
         }
 
     }

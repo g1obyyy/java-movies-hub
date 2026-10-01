@@ -27,12 +27,10 @@ public final class HttpResponder {
         return new HttpResponder(gson);
     }
 
-    public Gson getGson() {
-        return gson;
-    }
+    public void sendJson(HttpExchange exchange, int status, Object data) throws IOException {
+        String jsonString = gson.toJson(data);
 
-    public void sendJson(HttpExchange exchange, int status, final String json) throws IOException {
-        byte[] responseBody = json.getBytes(DEFAULT_CHARSET);
+        byte[] responseBody = jsonString.getBytes(DEFAULT_CHARSET);
         exchange.getResponseHeaders().set("Content-Type", CT_JSON);
         exchange.sendResponseHeaders(status, responseBody.length);
         try (OutputStream os = exchange.getResponseBody()) {
@@ -49,28 +47,5 @@ public final class HttpResponder {
         final ErrorResponse errorResponse = new ErrorResponse(error, details);
         String jsonError = gson.toJson(errorResponse);
         sendJson(exchange, status, jsonError);
-    }
-
-    public String extractIdString(final String path, final String resourceName) {
-        final String[] tokens = path.split("/");
-        if (tokens.length == 3 && tokens[1].equals(resourceName)) {
-            return tokens[2];
-        }
-        return null;
-    }
-
-    public boolean isApplicationJson(HttpExchange exchange) {
-        List<String> headers = exchange.getRequestHeaders().get("Content-Type");
-        if (headers == null) {
-            return false;
-        }
-        return headers.stream()
-                .anyMatch(header -> header.toLowerCase().contains("application/json"));
-    }
-
-    public String readBody(HttpExchange exchange) throws IOException {
-        try (InputStream is = exchange.getRequestBody()) {
-            return new String(is.readAllBytes(), DEFAULT_CHARSET);
-        }
     }
 }

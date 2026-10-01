@@ -3,6 +3,7 @@ package ru.practicum.moviehub.strategy;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import ru.practicum.moviehub.exception.ValidationException;
+import ru.practicum.moviehub.http.HttpRequestParser;
 import ru.practicum.moviehub.http.HttpResponder;
 import ru.practicum.moviehub.model.Movie;
 import ru.practicum.moviehub.store.MoviesStore;
@@ -16,10 +17,12 @@ public class PostMovieStrategy implements MovieActionStrategy {
 
     private final MoviesStore moviesStore;
     private final HttpResponder responder;
+    private final HttpRequestParser parser;
 
-    public PostMovieStrategy(final MoviesStore moviesStore, final HttpResponder responder) {
+    public PostMovieStrategy(final MoviesStore moviesStore, final HttpResponder responder, final HttpRequestParser parser) {
         this.moviesStore = Objects.requireNonNull(moviesStore,"Библиотека фильмов не может быть Null");
         this.responder = Objects.requireNonNull(responder, "Класс Responder должен быть инициализирован");
+        this.parser = Objects.requireNonNull(parser, "Класс Parser должен быть инициализирован");
     }
 
     @Override
@@ -30,18 +33,17 @@ public class PostMovieStrategy implements MovieActionStrategy {
             return;
         }
 
-        if (!responder.isApplicationJson(exchange)) {
+        if (!parser.isApplicationJson(exchange)) {
             responder.sendError(exchange, 415, "Unsupported Media Type",
                     List.of("Ожидается для Content-Type: " + HttpResponder.CT_JSON));
             return;
         }
 
         try {
-            final String body = responder.readBody(exchange);
-            MovieRequest request = responder.getGson().fromJson(body, MovieRequest.class);
+            MovieRequest request = parser.readJsonBody(exchange, MovieRequest.class);
 
             if (request == null) {
-                responder.sendError(exchange, 400, "Bad Request", List.of("Тело запроса пустое"));
+                responder.sendError(exchange, 422, "Validation Error", List.of("Тело запроса пустое"));
                 return;
             }
 
@@ -51,13 +53,11 @@ public class PostMovieStrategy implements MovieActionStrategy {
             }
 
             Movie movie = moviesStore.addMovie(request.title, request.year);
-            responder.sendJson(exchange, 201, responder.getGson().toJson(movie));
+            responder.sendJson(exchange, 201, movie);
         } catch (JsonSyntaxException e) {
-            responder.sendError(exchange, 400, "Bad Request", List.of("Некорректный JSON"));
+            responder.sendError(exchange, 422, "Validation Error", List.of("Некорректный JSON"));
         } catch (ValidationException e) {
             responder.sendError(exchange, 422, "Validation Error", e.getDetails());
-        } catch (IllegalStateException e) {
-            responder.sendError(exchange, 409, "Conflict", List.of(e.getMessage()));
         }
     }
 

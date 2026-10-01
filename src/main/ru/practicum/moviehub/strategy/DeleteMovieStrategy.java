@@ -1,6 +1,7 @@
 package ru.practicum.moviehub.strategy;
 
 import com.sun.net.httpserver.HttpExchange;
+import ru.practicum.moviehub.http.HttpRequestParser;
 import ru.practicum.moviehub.http.HttpResponder;
 import ru.practicum.moviehub.store.MoviesStore;
 
@@ -13,15 +14,17 @@ public class DeleteMovieStrategy implements MovieActionStrategy {
 
     private final MoviesStore moviesStore;
     private final HttpResponder responder;
+    private final HttpRequestParser parser;
 
-    public DeleteMovieStrategy(final MoviesStore moviesStore, final HttpResponder responder) {
+    public DeleteMovieStrategy(final MoviesStore moviesStore, final HttpResponder responder, final HttpRequestParser parser) {
         this.moviesStore = Objects.requireNonNull(moviesStore,"Библиотека фильмов не может быть Null");
         this.responder = Objects.requireNonNull(responder, "Класс Responder должен быть инициализирован");
+        this.parser = Objects.requireNonNull(parser, "Класс Parser должен быть инициализирован");
     }
 
     @Override
     public void execute(HttpExchange exchange, final String path) throws IOException {
-        String idString = responder.extractIdString(path, RESOURCE);
+        String idString = parser.extractIdString(path, RESOURCE);
         if (idString == null)  {
             responder.sendError(exchange, 404, "Not Found",
                     List.of("DELETE запросы принимаются только на /" + RESOURCE + "/{id}"));
