@@ -71,33 +71,6 @@ public class PostMovieApiTest extends BaseApiTest {
     }
 
     @Test
-    @DisplayName("Ошибка 422 при превышении максимальной длины названия")
-    public void postMovieWithLongLength() throws Exception {
-        final String title = "........................................"
-                + "........................................" +
-                "........................";
-        MovieRequest movieRequest = new MovieRequest(title, 2000);
-        String jsonString = gson.toJson(movieRequest);
-
-        URI uri = URI.create(URI_FULL);
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(uri)
-                .header("Content-Type", HttpResponder.CT_JSON)
-                .POST(HttpRequest.BodyPublishers.ofString(jsonString))
-                .build();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        Assertions.assertEquals(422, response.statusCode());
-        ErrorResponse error = gson.fromJson(response.body(), ErrorResponse.class);
-        Assertions.assertEquals("Validation Error", error.error());
-        boolean hasTitleLengthError = error.details().stream()
-                .anyMatch(el -> el.contains("длина не должна превышать 100 символов"));
-        Assertions.assertTrue(hasTitleLengthError);
-        Assertions.assertEquals(0, store.size());
-    }
-
-    @Test
     @DisplayName("Ошибка 422 при некорректном годе выпуска")
     public void postMovieWithIncorrectYear() throws Exception {
         MovieRequest movieRequest = new MovieRequest("Король лев", 3000);
@@ -146,7 +119,7 @@ public class PostMovieApiTest extends BaseApiTest {
     }
 
     @Test
-    @DisplayName("Ошибка 400 при передаче невалидного JSON")
+    @DisplayName("Ошибка 422 при передаче невалидного JSON")
     public void postMovieWithIncorrectJson() throws Exception {
         String brokenJson = "asd: e";
 
@@ -168,7 +141,7 @@ public class PostMovieApiTest extends BaseApiTest {
     }
 
     @Test
-    @DisplayName("Ошибка 409 при попытке добавить уже существующий фильм")
+    @DisplayName("Корректное добавление фильма при дублировании")
     public void postMovieWithDuplicate() throws Exception {
         store.addMovie("Король лев", 2000);
 
@@ -250,5 +223,113 @@ public class PostMovieApiTest extends BaseApiTest {
                 .anyMatch(el -> el.contains("Поле 'year' обязательно"));
         Assertions.assertTrue(hasYearError);
         Assertions.assertEquals(0, store.size());
+    }
+
+    @Test
+    @DisplayName("Успешное добавление фильма с годом на нижней границе")
+    public void postMovieWithValidBoundaryYear() throws Exception {
+        MovieRequest movieRequest = new MovieRequest("Первый фильм", 1888);
+        String jsonString = gson.toJson(movieRequest);
+
+        URI uri = URI.create(URI_FULL);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Content-Type", HttpResponder.CT_JSON)
+                .POST(HttpRequest.BodyPublishers.ofString(jsonString))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        Assertions.assertEquals(201, response.statusCode());
+        Movie movie = gson.fromJson(response.body(), Movie.class);
+        Assertions.assertEquals(1888, movie.getYear());
+    }
+
+    @Test
+    @DisplayName("Ошибка 422 при годе за нижней границей")
+    public void postMovieWithInvalidBoundaryYear() throws Exception {
+        MovieRequest movieRequest = new MovieRequest("Король лев", 1887);
+        String jsonString = gson.toJson(movieRequest);
+
+        URI uri = URI.create(URI_FULL);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Content-Type", HttpResponder.CT_JSON)
+                .POST(HttpRequest.BodyPublishers.ofString(jsonString))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        Assertions.assertEquals(422, response.statusCode());
+        ErrorResponse error = gson.fromJson(response.body(), ErrorResponse.class);
+        boolean hasYearError = error.details().stream()
+                .anyMatch(el -> el.contains("Год должен быть между"));
+        Assertions.assertTrue(hasYearError);
+    }
+
+    @Test
+    @DisplayName("Успешное добавление фильма с названием ровно 100 символов")
+    public void postMovieWithValidBoundaryTitleLength() throws Exception {
+        String title100 = "a".repeat(100);
+        MovieRequest movieRequest = new MovieRequest(title100, 2000);
+        String jsonString = gson.toJson(movieRequest);
+
+        URI uri = URI.create(URI_FULL);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Content-Type", HttpResponder.CT_JSON)
+                .POST(HttpRequest.BodyPublishers.ofString(jsonString))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        Assertions.assertEquals(201, response.statusCode());
+        Movie movie = gson.fromJson(response.body(), Movie.class);
+        Assertions.assertEquals(title100, movie.getTitle());
+    }
+
+    @Test
+    @DisplayName("Ошибка 422 при названии в 101 символ")
+    public void postMovieWithInvalidBoundaryTitleLength() throws Exception {
+        String title101 = "a".repeat(101);
+        MovieRequest movieRequest = new MovieRequest(title101, 2000);
+        String jsonString = gson.toJson(movieRequest);
+
+        URI uri = URI.create(URI_FULL);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Content-Type", HttpResponder.CT_JSON)
+                .POST(HttpRequest.BodyPublishers.ofString(jsonString))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        Assertions.assertEquals(422, response.statusCode());
+        ErrorResponse error = gson.fromJson(response.body(), ErrorResponse.class);
+        boolean hasTitleLengthError = error.details().stream()
+                .anyMatch(el -> el.contains("длина не должна превышать 100 символов"));
+        Assertions.assertTrue(hasTitleLengthError);
+    }
+
+    @Test
+    @DisplayName("Ошибка 422 при пустом названии фильма")
+    public void postMovieWithEmptyTitle() throws Exception {
+        MovieRequest movieRequest = new MovieRequest("", 2000);
+        String jsonString = gson.toJson(movieRequest);
+
+        URI uri = URI.create(URI_FULL);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Content-Type", HttpResponder.CT_JSON)
+                .POST(HttpRequest.BodyPublishers.ofString(jsonString))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        Assertions.assertEquals(422, response.statusCode());
+        ErrorResponse error = gson.fromJson(response.body(), ErrorResponse.class);
+        boolean hasEmptyTitleError = error.details().stream()
+                .anyMatch(el -> el.contains("Название не должно быть пустым"));
+        Assertions.assertTrue(hasEmptyTitleError);
     }
 }

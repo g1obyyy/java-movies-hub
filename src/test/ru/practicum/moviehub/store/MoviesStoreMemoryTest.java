@@ -81,6 +81,15 @@ public class MoviesStoreMemoryTest {
     }
 
     @Test
+    public void removeMovieNotExist() {
+        int fakeId = 999;
+        boolean isRemoved = store.removeMovie(fakeId);
+
+        Assertions.assertFalse(isRemoved);
+        Assertions.assertEquals(0, store.size());
+    }
+
+    @Test
     public void getListByYearValid() {
         store.addMovie("Король лев", 2000);
         store.addMovie("Лев Король", 2000);
