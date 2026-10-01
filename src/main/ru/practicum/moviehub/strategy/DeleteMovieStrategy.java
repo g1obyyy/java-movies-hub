@@ -20,7 +20,7 @@ public class DeleteMovieStrategy extends BaseMovieActionStrategy {
             if (store.removeMovie(id)) {
                 responder.sendNoContent(exchange, 204);
             } else {
-                responder.sendError(exchange, 404, "Not Found", List.of("Фильм не найден"));
+                responder.sendNoContent(exchange, 404);
             }
         } catch (NumberFormatException e) {
             responder.sendError(exchange, 400, "Bad Request", List.of("ID должен быть целым числом"));
