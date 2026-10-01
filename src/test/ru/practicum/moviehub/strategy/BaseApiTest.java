@@ -13,27 +13,27 @@ import java.io.IOException;
 import java.net.http.HttpClient;
 
 public class BaseApiTest {
-    public static final int PORT = 8081;
-
     protected static MoviesServer server;
     protected static MoviesStore store;
     protected static HttpClient client;
     protected static Gson gson;
 
+    protected static String URI_FULL;
+
     @BeforeAll
     static void setUp() throws IOException {
         store = MoviesStoreRAM.create();
 
-        server = MoviesServer.create(store, PORT);
+        server = MoviesServer.create(store, 0);
         server.start();
+
+        int actualPort = server.getPort();
+        URI_FULL = "http://localhost:" + actualPort + "/movies";
 
         client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .build();
-        gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .serializeNulls()
-                .create();
+        gson = server.getGson();
     }
 
     @AfterAll

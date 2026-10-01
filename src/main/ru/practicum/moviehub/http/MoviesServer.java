@@ -11,12 +11,10 @@ import java.util.Objects;
 
 public final class MoviesServer {
     private final HttpServer server;
-    private final int port;
+    private final Gson gson;
 
     private MoviesServer(final MoviesStore moviesStore, int port) throws IOException {
-        this.port = port;
-
-        Gson gson = new GsonBuilder()
+        gson = new GsonBuilder()
                 .serializeNulls()
                 .setPrettyPrinting()
                 .create();
@@ -38,5 +36,13 @@ public final class MoviesServer {
     public void stop() {
         server.stop(0);
         System.out.println("Сервер остановлен");
+    }
+
+    public int getPort() {
+        return server.getAddress().getPort();
+    }
+
+    public Gson getGson() {
+        return gson;
     }
 }

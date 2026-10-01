@@ -13,9 +13,6 @@ import java.net.http.HttpResponse;
 
 @DisplayName("Тестирование API POST")
 public class PostMovieApiTest extends BaseApiTest {
-    private static final String URI_FULL = "http://localhost:8081/movies/";
-
-
     private static class MovieRequest {
         String title;
         Integer year;
@@ -214,7 +211,7 @@ public class PostMovieApiTest extends BaseApiTest {
     @Test
     @DisplayName("Ошибка 404 при некорректном формате URI")
     public void postMovieWrongUri() throws Exception {
-        URI wrongUri = URI.create(URI_FULL + "131");
+        URI wrongUri = URI.create(URI_FULL + "/" + "131");
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(wrongUri)
                 .header("Content-Type", HttpResponder.CT_JSON)

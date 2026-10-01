@@ -7,12 +7,10 @@ import ru.practicum.moviehub.store.MoviesStoreRAM;
 import java.io.IOException;
 
 public class MovieHubApp {
-    private static final int PORT = 8080;
-
     public static void main(String[] args) {
         try {
             final MoviesStore moviesStore = MoviesStoreRAM.create();
-            final MoviesServer server = MoviesServer.create(moviesStore, PORT);
+            final MoviesServer server = MoviesServer.create(moviesStore, 0);
 
             Runtime.getRuntime().addShutdownHook(new Thread(server::stop));
             server.start();

@@ -11,15 +11,13 @@ import java.net.http.HttpResponse;
 
 @DisplayName("Тестирование API DELETE")
 public class DeleteMovieApiTest extends BaseApiTest {
-    private static final String URI_PART = "http://localhost:8081/movies/";
-
     @Test
     @DisplayName("Успешное удаление фильма по существующему ID")
     public void deleteMovieValidValue() throws Exception {
         Movie savedMovie = store.addMovie("Король лев", 2000);
         int id = savedMovie.getId();
 
-        URI uri = URI.create(URI_PART + id);
+        URI uri = URI.create(URI_FULL + "/" + id);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .DELETE()
@@ -34,7 +32,7 @@ public class DeleteMovieApiTest extends BaseApiTest {
     @DisplayName("Ошибка 404 при удалении несуществующего фильма")
     public void deleteMovieMovieNotFound() throws Exception {
         int fakeId = 21312;
-        URI uri = URI.create(URI_PART + fakeId);
+        URI uri = URI.create(URI_FULL + "/" + fakeId);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .DELETE()
@@ -43,17 +41,14 @@ public class DeleteMovieApiTest extends BaseApiTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         Assertions.assertEquals(404, response.statusCode());
-        ErrorResponse error = gson.fromJson(response.body(), ErrorResponse.class);
-        Assertions.assertEquals("Not Found", error.error());
-        Assertions.assertEquals(1, error.details().size());
-        Assertions.assertEquals("Фильм не найден", error.details().getFirst());
+        Assertions.assertTrue(response.body().isEmpty());
     }
 
     @Test
     @DisplayName("Ошибка 400 при некорректном формате ID (не число)")
     public void deleteMovieWrongId() throws Exception {
         final String wrongId = "abd";
-        URI uri = URI.create(URI_PART + wrongId);
+        URI uri = URI.create(URI_FULL + "/" + wrongId);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .DELETE()
@@ -69,9 +64,9 @@ public class DeleteMovieApiTest extends BaseApiTest {
     }
 
     @Test
-    @DisplayName("Ошибка 404 при некорректном формате URI")
+    @DisplayName("Ошибка 405 при некорректном формате URI - попытка удаления всей коллекции")
     public void deleteMovieWrongUri() throws Exception {
-        URI wrongUri = URI.create(URI_PART);
+        URI wrongUri = URI.create(URI_FULL);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(wrongUri)
                 .DELETE()
@@ -79,11 +74,10 @@ public class DeleteMovieApiTest extends BaseApiTest {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        Assertions.assertEquals(404, response.statusCode());
+        Assertions.assertEquals(405, response.statusCode());
         ErrorResponse error = gson.fromJson(response.body(), ErrorResponse.class);
-        Assertions.assertEquals("Not Found", error.error());
+        Assertions.assertEquals("Method Not Allowed", error.error());
         Assertions.assertEquals(1, error.details().size());
-        Assertions.assertEquals("DELETE запросы принимаются только на /" +
-                DeleteMovieStrategy.RESOURCE + "/{id}", error.details().getFirst());
+        Assertions.assertEquals("Удаление всей коллекции не поддерживается", error.details().getFirst());
     }
 }

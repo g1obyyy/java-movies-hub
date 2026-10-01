@@ -12,8 +12,6 @@ import java.net.http.HttpResponse;
 
 @DisplayName("Тестирование общих case'ов handler'а")
 public class MoviesApiTest extends BaseApiTest {
-    private static final String URI_FULL = "http://localhost:8081/movies";
-
     @Test
     @DisplayName("Успешный ответ должен содержать Content-Type: application/json; charset=UTF-8")
     public void responseHasCorrectContentType() throws Exception {

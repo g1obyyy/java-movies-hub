@@ -12,8 +12,6 @@ import java.net.http.HttpResponse;
 import java.util.List;
 
 public class GetMovieApiTest extends BaseApiTest {
-    private static final String URI_FULL = "http://localhost:8081/movies";
-
     @Test
     @DisplayName("GET /movies возвращает пустой список, если нет фильмов")
     public void getAllMoviesEmptyList() throws Exception {
@@ -157,8 +155,8 @@ public class GetMovieApiTest extends BaseApiTest {
 
     @Test
     @DisplayName("Ошибка 404 при некорректном формате URI")
-    public void deleteMovieWrongUri() throws Exception {
-        URI wrongUri = URI.create(URI_FULL + "qdq");
+    public void getMovieWrongUri() throws Exception {
+        URI wrongUri = URI.create(URI_FULL + "/" + "qdq");
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(wrongUri)
                 .GET()
@@ -166,13 +164,11 @@ public class GetMovieApiTest extends BaseApiTest {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        Assertions.assertEquals(404, response.statusCode());
+        Assertions.assertEquals(400, response.statusCode());
         ErrorResponse error = gson.fromJson(response.body(), ErrorResponse.class);
-        Assertions.assertEquals("Not Found", error.error());
+        Assertions.assertEquals("Bad Request", error.error());
         Assertions.assertEquals(1, error.details().size());
-        Assertions.assertEquals("Некорректный эндпоинт. Используйте /"
-                + GetMovieStrategy.RESOURCE + " или /"
-                + GetMovieStrategy.RESOURCE + "/{id}",
+        Assertions.assertEquals("ID должен быть целым числом",
                 error.details().getFirst());
     }
 }

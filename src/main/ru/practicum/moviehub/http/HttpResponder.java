@@ -44,7 +44,6 @@ public final class HttpResponder {
 
     public void sendError(HttpExchange exchange, int status, final String error, final List<String> details) throws  IOException {
         final ErrorResponse errorResponse = new ErrorResponse(error, details);
-        String jsonError = gson.toJson(errorResponse);
-        sendJson(exchange, status, jsonError);
+        sendJson(exchange, status, errorResponse);
     }
 }

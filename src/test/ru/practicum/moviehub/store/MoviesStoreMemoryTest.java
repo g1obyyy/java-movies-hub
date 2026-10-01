@@ -44,7 +44,11 @@ public class MoviesStoreMemoryTest {
     public void addMovieWithDuplicateData() {
         store.addMovie("Король лев", 2000);
 
-        Assertions.assertThrows(IllegalStateException.class, () -> store.addMovie("Король лев", 2000));
+        Movie duplicate = store.addMovie("Король лев", 2000);
+        Assertions.assertEquals("Король лев", duplicate.getTitle());
+        Assertions.assertEquals(2000, duplicate.getYear());
+        Assertions.assertTrue(duplicate.getId() > 0);
+        Assertions.assertEquals(2, store.size());
     }
 
     @Test

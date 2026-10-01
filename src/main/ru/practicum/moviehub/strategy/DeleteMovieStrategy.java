@@ -15,6 +15,12 @@ public class DeleteMovieStrategy extends BaseMovieActionStrategy {
 
     @Override
     public void execute(HttpExchange exchange, final String idString) throws IOException {
+        if (idString == null) {
+            responder.sendError(exchange, 405, "Method Not Allowed",
+                    List.of("Удаление всей коллекции не поддерживается"));
+            return;
+        }
+
         try {
             int id = Integer.parseInt(idString);
             if (store.removeMovie(id)) {
