@@ -45,6 +45,11 @@ public class PostMovieStrategy implements MovieActionStrategy {
                 return;
             }
 
+            if (request.year == null) {
+                responder.sendError(exchange, 422, "Validation Error",
+                        List.of("Поле 'year' обязательно к заполнению"));
+            }
+
             Movie movie = moviesStore.addMovie(request.title, request.year);
             responder.sendJson(exchange, 201, responder.getGson().toJson(movie));
         } catch (JsonSyntaxException e) {

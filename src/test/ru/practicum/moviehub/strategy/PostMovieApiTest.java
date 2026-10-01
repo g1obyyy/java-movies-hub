@@ -235,4 +235,27 @@ public class PostMovieApiTest extends BaseApiTest {
                 error.details().getFirst());
         Assertions.assertEquals(0, store.size());
     }
+
+    @Test
+    @DisplayName("Ошибка 422 при отсутствии поля year в запросе")
+    public void postMovieWithoutYear() throws Exception {
+        String jsonString = "{\"title\": \"Король лев\"}";
+
+        URI uri = URI.create(URI_FULL);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Content-Type", HttpResponder.CT_JSON)
+                .POST(HttpRequest.BodyPublishers.ofString(jsonString))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        Assertions.assertEquals(422, response.statusCode());
+        ErrorResponse error = gson.fromJson(response.body(), ErrorResponse.class);
+        Assertions.assertEquals("Validation Error", error.error());
+        boolean hasYearError = error.details().stream()
+                .anyMatch(el -> el.contains("Поле 'year' обязательно"));
+        Assertions.assertTrue(hasYearError);
+        Assertions.assertEquals(0, store.size());
+    }
 }
