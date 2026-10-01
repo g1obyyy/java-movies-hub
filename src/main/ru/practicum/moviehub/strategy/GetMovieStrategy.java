@@ -8,46 +8,30 @@ import ru.practicum.moviehub.store.MoviesStore;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
-public class GetMovieStrategy implements MovieActionStrategy {
-    public static final String RESOURCE = "movies";
-
-    private final MoviesStore moviesStore;
-    private final HttpResponder responder;
-    private final HttpRequestParser parser;
-
-    public GetMovieStrategy(final MoviesStore moviesStore, final HttpResponder responder, final HttpRequestParser parser) {
-        this.moviesStore = Objects.requireNonNull(moviesStore,"Библиотека фильмов не может быть Null");
-        this.responder = Objects.requireNonNull(responder, "Класс Responder должен быть инициализирован");
-        this.parser = Objects.requireNonNull(parser, "Класс Parser должен быть инициализирован");
+public class GetMovieStrategy extends BaseMovieActionStrategy {
+    public GetMovieStrategy(final MoviesStore store, final HttpResponder responder, final HttpRequestParser parser) {
+        super(store, responder, parser);
     }
 
     @Override
-    public void execute(HttpExchange exchange, final String path) throws IOException {
+    public void execute(HttpExchange exchange, final String idString) throws IOException {
         final String query = exchange.getRequestURI().getQuery();
 
-        if (path.equals("/" + RESOURCE)) {
+        if (idString == null) {
             if (query != null && query.startsWith("year=")) {
                 processGetByYear(exchange, query);
             } else {
                 processGetAll(exchange);
             }
-            return;
-        }
-
-        final String idString = parser.extractIdString(path, RESOURCE);
-        if (idString != null) {
-            processGetById(exchange, idString);
         } else {
-            responder.sendError(exchange, 404, "Not Found",
-                    List.of("Некорректный эндпоинт. Используйте /" + RESOURCE + " или /" + RESOURCE + "/{id}"));
+            processGetById(exchange, idString);
         }
     }
 
     private void processGetAll(HttpExchange exchange) throws IOException {
-        responder.sendJson(exchange, 200, moviesStore.getAllMoviesList());
+        responder.sendJson(exchange, 200, store.getAllMoviesList());
     }
 
     private void processGetByYear(HttpExchange exchange, final String query) throws IOException {
@@ -58,7 +42,7 @@ public class GetMovieStrategy implements MovieActionStrategy {
             }
             int year = Integer.parseInt(parts[1]);
 
-            List<Movie> filtered = moviesStore.getListByYear(year);
+            List<Movie> filtered = store.getListByYear(year);
             responder.sendJson(exchange, 200, filtered);
         } catch (IllegalArgumentException e) {
             responder.sendError(exchange, 400, "Bad Request",
@@ -69,7 +53,7 @@ public class GetMovieStrategy implements MovieActionStrategy {
     private void processGetById(HttpExchange exchange, final String idString) throws IOException {
         try {
             int id = Integer.parseInt(idString);
-            Optional<Movie> optionalMovie = moviesStore.getMovieById(id);
+            Optional<Movie> optionalMovie = store.getMovieById(id);
             if (optionalMovie.isPresent()) {
                 responder.sendJson(exchange, 200, optionalMovie.get());
             } else {

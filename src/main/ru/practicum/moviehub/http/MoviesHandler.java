@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import ru.practicum.moviehub.store.MoviesStore;
-import ru.practicum.moviehub.strategy.DeleteMovieStrategy;
-import ru.practicum.moviehub.strategy.GetMovieStrategy;
-import ru.practicum.moviehub.strategy.MovieActionStrategy;
-import ru.practicum.moviehub.strategy.PostMovieStrategy;
+import ru.practicum.moviehub.strategy.*;
 
 import java.io.IOException;
 import java.util.Map;
@@ -17,16 +14,19 @@ import java.util.List;
 public final class MoviesHandler implements HttpHandler {
     private final Map<String, MovieActionStrategy> strategies;
     private final HttpResponder responder;
+    private final HttpRequestParser parser;
 
     public MoviesHandler(final MoviesStore moviesStore, final Gson gson) {
         Objects.requireNonNull(moviesStore, "Библиотека фильмов не может быть Null");
         Objects.requireNonNull(gson,"Объект типа Gson не может быть Null");
 
         responder = HttpResponder.from(gson);
+        this.parser = new HttpRequestParser(gson);
+
         strategies = Map.of(
-                "GET", new GetMovieStrategy(moviesStore, responder),
-                "POST", new PostMovieStrategy(moviesStore, responder),
-                "DELETE", new DeleteMovieStrategy(moviesStore, responder)
+                "GET", new GetMovieStrategy(moviesStore, responder, parser),
+                "POST", new PostMovieStrategy(moviesStore, responder, parser),
+                "DELETE", new DeleteMovieStrategy(moviesStore, responder, parser)
         );
     }
 
@@ -36,9 +36,17 @@ public final class MoviesHandler implements HttpHandler {
         final String path = getNormalizePath(exchange);
 
         try {
+            if (!path.startsWith("/movies")) {
+                responder.sendError(exchange, 404, "Not Found",
+                        List.of("Некорректный эндпоинт. Используйте /movies или /movies/{id}"));
+                return;
+            }
+
+            String idString = parser.extractIdString(path, BaseMovieActionStrategy.RESOURCE);
+
             MovieActionStrategy strategy = strategies.get(method.toUpperCase());
             if (strategy != null) {
-                strategy.execute(exchange, path);
+                strategy.execute(exchange, idString);
             } else {
                 responder.sendError(exchange, 405, "Method Not Allowed",
                         List.of("Метод " + method + " не поддерживается"));
