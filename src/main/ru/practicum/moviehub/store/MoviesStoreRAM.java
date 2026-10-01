@@ -24,10 +24,11 @@ public final class MoviesStoreRAM implements MoviesStore {
     }
 
     @Override
-    public Movie addMovie(final String title, int year) {
-        int id = idGenerator.getAndIncrement();
-        final Movie movie = Movie.from(id, title, year);
-        movies.put(id, movie);
+    public synchronized Movie addMovie(final String title, int year) {
+        int currentId = idGenerator.get();
+        final Movie movie = Movie.from(currentId, title, year);
+        idGenerator.incrementAndGet();
+        movies.put(currentId, movie);
         return movie;
     }
 
